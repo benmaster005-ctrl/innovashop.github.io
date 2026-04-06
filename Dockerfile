@@ -1,6 +1,6 @@
 FROM php:8.2-cli
 WORKDIR /app
-COPY ..
+COPY . .
 RUN apt-get update && apt-get install -y \
   git \
   unzip \
