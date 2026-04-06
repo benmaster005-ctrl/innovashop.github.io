@@ -1,110 +1,44 @@
-###################
-# Stage 1 — JS Build (Webpack Encore)
-###################
-FROM node:20-alpine AS node_builder
+# Image de base PHP avec Apache
+FROM php:8.2-apache
 
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-###################
-# Stage 2 — PHP Dependencies
-###################
-FROM composer:2.7 AS composer_builder
-
-WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-scripts \
-    --no-autoloader \
-    --ignore-platform-reqs \
-    --prefer-dist
-
-COPY . .
-RUN composer dump-autoload --optimize --no-dev
-
-###################
-# Stage 3 — Production Image
-###################
-FROM php:8.2-fpm-alpine AS production
-
-# Extensions système nécessaires
-RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    bash \
-    curl \
-    libpq-dev \
+# Installer dépendances système
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libicu-dev \
+    libonig-dev \
     libzip-dev \
-    icu-dev \
-    oniguruma-dev \
+    zip \
     && docker-php-ext-install \
-        pdo \
-        pdo_pgsql \
-        pgsql \
-        zip \
-        intl \
-        opcache \
-        mbstring \
-    && rm -rf /var/cache/apk/*
+    intl \
+    pdo \
+    pdo_mysql \
+    zip \
+    opcache
 
-# Configuration OPcache pour la production
-RUN { \
-    echo 'opcache.memory_consumption=256'; \
-    echo 'opcache.interned_strings_buffer=16'; \
-    echo 'opcache.max_accelerated_files=20000'; \
-    echo 'opcache.revalidate_freq=0'; \
-    echo 'opcache.validate_timestamps=0'; \
-    echo 'opcache.enable_cli=1'; \
-    echo 'opcache.jit_buffer_size=256M'; \
-    echo 'opcache.jit=1255'; \
-} > /usr/local/etc/php/conf.d/opcache.ini
+# Activer mod_rewrite pour Symfony
+RUN a2enmod rewrite
 
-# PHP config production
-RUN { \
-    echo 'expose_php=Off'; \
-    echo 'memory_limit=256M'; \
-    echo 'upload_max_filesize=64M'; \
-    echo 'post_max_size=64M'; \
-    echo 'max_execution_time=60'; \
-    echo 'date.timezone=UTC'; \
-} > /usr/local/etc/php/conf.d/app.ini
-
+# Définir le dossier de travail
 WORKDIR /var/www/html
 
-# Copie des vendors (Composer)
-COPY --from=composer_builder /app/vendor ./vendor
-COPY --from=composer_builder /app/composer.json ./composer.json
-COPY --from=composer_builder /app/composer.lock ./composer.lock
-
-# Copie des assets compilés (Webpack Encore)
-COPY --from=node_builder /app/public/build ./public/build
-
-# Copie du reste du projet
+# Copier les fichiers du projet
 COPY . .
 
-# Nettoyage & permissions
-RUN mkdir -p var/cache var/log \
-    && chown -R www-data:www-data var \
-    && chmod -R 775 var
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Config Nginx
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+# Installer les dépendances Symfony
+RUN composer install --no-dev --optimize-autoloader
 
-# Config Supervisor (gère PHP-FPM + Nginx)
-COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Configurer Apache pour pointer vers /public
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Script d'entrée
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Permissions (important pour Symfony)
+RUN chown -R www-data:www-data /var/www/html/var
 
-EXPOSE 10000
+# Port exposé
+EXPOSE 80
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Lancer Apache
+CMD ["apache2-foreground"]
