@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+<div class="hero">
+    <div class="hero-text">
+        <p>Nouveautés.</p>
+        <p>Découvrez les dernières tendances et nos offres exclusives.</p>
+    </div>
+    <img src="/images/innovshop.webp" />
+    <div class="product-cart">
+        <p class="container-title">Produits à la une</p>
+        <div class="cart-container">
+            {% for produit in produits %}
+                <div class="group relative bg-white rounded-xl border-b border-gray-200 hover:-translate-y-2 transition-all duration-300 overflow-hidden max-w-sm mx-auto h-full">
+                    {# Image #}
+                    <div class="relative overflow-hidden">
+                        <img src="{{ asset('uploads/' ~ produit.image) }}" 
+                            class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" 
+                            alt="{{ produit.nom }}">
+                    </div>
+                    {# Contenu #}
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                            {{ produit.nom }}
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                            {{ produit.description|striptags|slice(0, 120) ~ '...' }}
+                        </p>
+                    </div>    
+                    {# Prix et bouton #}
+                    <div class="flex items-center justify-between pb-2 px-3">
+                        <span class="text-2xl font-bold text-gray-600">
+                            {{ produit.prix / 100}} €
+                        </span>
+                        <a href="{{ path('app_product_detail', {id: produit.id})}}" 
+                        class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-1 rounded-lg font-medium">
+                            Voir le produit
+                        </a>
+                        <a href="{{ path('add_to_cart', {id: produit.id}) }}"><img src="/cart.svg"/></a>
+                    </div>
+                </div>
+            {% endfor %}    
+        </div>
+    </div>
+    <div class="cta">
+        <p>Découvrir maintenant.</p>    
+        <p>Découvrez des offres exclusives sur les nouveautés.</p>
+        <a  href="{{ path('app_product')}}" class="button-primary">Commencer le Shopping</a>
+    </div>            
+{% endblock %}

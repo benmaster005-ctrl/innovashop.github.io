@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}InnovaShop - Detail du produit{% endblock %}
+
+{% block body %}
+<div class="container">
+    <img src="{{ asset('uploads/' ~ produit.image)}}"
+    <div class="product-text">
+        <p class="product-title font-bold" >{{ produit.nom }}</p>
+        <p class="">{{ produit.description|raw }}</p>
+    </div>
+    <div class="product-text">
+        <p class="font-bold text-2xl mb-3" >Spécification</p>
+        <p>{{ produit.specification|raw }}</p>
+    </div>
+    <div class="pricing">
+        <div>
+            <p>{{ produit.prix / 100 }} €</p>
+            <p>Prix actuel</p>
+        </div>
+        <div>
+            <p>-25 %</p>
+            <p>Aujourd'hui uniquement</p>
+        </div>
+    </div>
+    <div class="product-cta">
+        <div class="cta">
+            <p>Prêt à commander ?</p>    
+            <p>Livraison internationale en 2 jours.</p>
+            <a href="{{ path('add_to_cart', {id: produit.id}) }}" class="button-primary">Ajouter au panier</a>
+        </div>
+    </div>
+    <div class="review-title">
+        <p>Avis Client</p>
+        <p>Ecoutez de nos client</p>    
+    </div>                   
+</div>
+{% endblock %}

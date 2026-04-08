@@ -4,7 +4,10 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {# templates/base.html.twig #}
+
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -12,6 +15,32 @@
         {% endblock %}
     </head>
     <body>
+    <header class="header">
+        <nav class="header-nav">
+            <div class="nav-title">
+                <h1><a href="{{path('app_home')}}">InnovaShop<span class="suph">R</span></a></h1>
+            </div>
+            <div class="nav-items">
+                <ul>
+                    <li><a href="{{path('app_home')}}">Accueil</a></li>
+                    <li><a href="{{path('app_product')}}">Catalogue</a></li>
+                    <li><a href='{{ path('app_contact')}}'>Contact</a></li>
+                </ul>
+            </div>
+            <div class="flex items-center justify-end gap-3">
+                <a href='#'><img src="/search.svg"/></a>
+                <a href='{{ path('app_user')}}'><img src="/account.svg"/></a>
+                {% if app.user and panier.getPanierProduits|length > 0 %}
+                    <a href="{{ path('app_cart')}}" class="flex relative"><img src="/cart.svg"/><span class="absolute left-3 bottom-2 bg-yellow-500 px-2 py-1 font-bold rounded-full">{{ panier.getPanierProduits|length }}</span></a>
+                {% else %}
+                    <a href="{{ path('app_cart')}}"><img src="/cart.svg"/></a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    <main>
         {% block body %}{% endblock %}
+    </main>
+    <footer>&copy; 2025 - InnovaShop | Tout droits réserver</footer>    
     </body>
 </html>

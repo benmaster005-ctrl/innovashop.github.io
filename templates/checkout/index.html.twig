@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout!{% endblock %}
+
+{% block body %}
+
+<div class="flex min-h-screen items-center justify-center  px-4 py-12">
+  <div class="w-full max-w-lg rounded-2xl bg-white p-8 shadow-xl ring-1 ring-slate-200/50">
+
+    <h2 class="mb-2 text-2xl font-semibold text-slate-800">Finaliser votre commande</h2>
+    <p class="mb-8 text-sm text-slate-500">Nous vous garantissons un paiement facile et sécurisé</p>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-5'}}) }}
+
+      {# Name #}
+      <div class="space-y-2">
+        <label for="name" class='block text-sm font-medium text-slate-700'>Nom Complet</label>
+        <input
+          class= 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition',
+          placeholder= 'Votre nom...'
+        />
+      </div>
+      <div class="space-y-2">
+        <label for="subname" class='block text-sm font-medium text-slate-700'>Téléphone</label>
+        <input
+          class= 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition',
+          placeholder= 'Téléphone...'
+        />
+      </div>
+      <div class="space-y-2">
+        <label for="subname" class='block text-sm font-medium text-slate-700'>Numéro de carte</label>
+        <input
+          class= 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition',
+          placeholder= '0123 4567 8901 2345' required
+        />
+      </div>
+      <div class="space-y-2 flex space-x-2">
+        <div>
+        <label for="subname" class='block text-sm font-medium text-slate-700'>Date d'expiration</label>
+        <input
+          class= 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition',
+          placeholder= '00/00' required
+        />
+        </div>
+        <div>
+        <label for="subname" class='block text-sm font-medium text-slate-700'>CVV</label>
+        <input
+          class= 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition',
+          placeholder= 'XXX' required
+        />
+        </div>
+      </div>
+      <div class="">
+        <div class="flex justify-between">
+          <p for="name" class='block text-sm font-medium text-slate-700'>Prix</p>
+          <p class="text-sm font-light text-gray-500">{{ total / 100 }} €</p>
+        </div>
+        <div class="flex justify-between">
+          <p for="name" class='block text-sm font-medium text-slate-700'>Tax</p>
+          <p class="text-sm font-light text-gray-500">0.40 €</p>
+        </div>
+        <div class="flex justify-between">
+          <p for="name" class='block text-sm font-medium text-slate-700'>Total TTC</p>
+          <p class="text-sm font-light text-gray-500">{{ total / 100 + 0.40 }} €</p>
+        </div>
+      </div>
+
+      {# Submit #}
+      <div class="pt-2">
+        <button
+          type="submit"
+          class="group flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-50 transition"
+        >
+          <span>Payer</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+        </button>
+      </div>
+
+    {{ form_end(form) }}
+
+  </div>
+</div>
+
+{% endblock %}

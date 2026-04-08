@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block body %}
+
+    <div id="dashboard" class="container">
+        <!-- Header -->
+        <header class="bg-white shadow-sm px-5  mb-8">
+            <div class="flex justify-between items-center py-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+                    <p class="text-sm text-gray-500">Bienvenue, {{ app.user.firstName|default('NON RENSEIGNE') }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">{{ app.user.firstName|slice(0,1)|default('N')|upper }}{{ app.user.lastName|slice(0,1)|default('/a')|upper }}</div>
+                    <a href="{{ path('app_utilisateur_edit', {id: app.user.getId})}}" class="px-4 py-2 text-white text-sm font-medium rounded-lg hover:bg-gray-200">Modifier</a>
+                    <a href="{{ path('app_logout')}}" class="px-4 py-2 border border-gray-200 text-white text-sm font-medium rounded-lg hover:bg-gray-200">Déconnexion</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm ">
+                <div class="flex items-center">
+                    <div class="p-3 bg-gray-100 rounded-xl">
+                        <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Commandes</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ commandes|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm ">
+                <div class="flex items-center">
+                    <div class="p-3 bg-gray-100 rounded-xl">
+                        <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    </div>
+                    {% if commandes %}
+                        {% set nblivres = commandes|filter(c => c.status == 'livree')|length %}
+                    {% else %}
+                        {% set nblivres = 0 %}    
+                    {% endif %}
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Livrées</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ nblivres }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm ">
+                <div class="flex items-center">
+                    <div class="p-3 bg-gray-100 rounded-xl">
+                        <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                        </svg>
+                    </div>
+                    {% if commandes %}
+                        {% set nbencours = commandes|filter(c => c.status == 'confirme')|length %}
+                    {% else %}
+                        {% set nbencours = 0 %}
+                    {% endif %}    
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">En cours</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ nbencours }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau commandes -->
+        <div class="bg-white rounded-xl shadow-sm  overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Mes commandes</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for commande in commandes %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium">#CMD-{{ commande.id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ commande.date|date("d/m/y") }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">{{ commande.status }}</span>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-gray-900">{{ commande.total / 100 }}€</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

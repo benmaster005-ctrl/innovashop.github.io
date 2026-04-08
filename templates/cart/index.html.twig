@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CartController!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="cart-hero-text">
+        <p>Votre Panier.</p>
+        <p>Review your selected products and quantities below. Adjust items as needed or proceed to checkout when you’re ready. All prices are in USD.</p>
+        <p>Review your selected products and quantities below. Adjust items as needed or proceed to checkout when you’re ready. All prices are in USD.</p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="61" height="40.497" fill="none" overflow="visible"><g><path d="M 0 40.497 C 0 40.497 12.625 31.622 17 14.997 C 21.375 -1.628 8.125 -6.253 6 10.497 C 3.875 27.247 17.438 30.247 22 21.497 C 26.563 12.747 27.438 19.934 31 23.497 C 34.563 27.059 37.25 25.747 40 20.997 C 42.75 16.247 41.837 23.455 47.5 24.497 C 53.163 25.538 56.75 23.247 59 18.997" fill="transparent" stroke-width="2" stroke="var(--token-8961fb69-0ea3-46ab-8b8e-1f9187ebd1a9, rgb(0, 0, 0))" stroke-linecap="round" stroke-linejoin="round"></path><path d="M 13 29.997 L 61 29.997" fill="transparent" stroke-width="2" stroke="var(--token-8961fb69-0ea3-46ab-8b8e-1f9187ebd1a9, rgb(0, 0, 0))" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+    </div>
+    
+    
+    {% if panier and panier.getPanierProduits|length > 0 %}
+        {% for produit in panier.getPanierProduits %}
+            <div class="flex items-center justify-between py-6 border-b border-gray-50 last:border-b-0 hover:bg-gray-50/50 transition-all duration-200 group">
+                <!-- Image -->
+                <div class="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden">
+                    <img src="{{ asset('uploads/' ~ produit.getProduit.image) }}" 
+                         alt="{{ produit.getProduit.nom }}" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-200">
+                </div>
+
+                <!-- Nom + Prix -->
+                <div class="flex items-center justify-between flex-1 ml-4 space-x-8">
+                    <div>
+                        <p class="font-medium text-gray-900 leading-tight hover:scale-105 transition-transform duration-200">{{ produit.getProduit.nom }}</p>
+                        <p class="text-sm text-gray-500">{{ produit.getProduit.prix / 100 }} €</p>
+                    </div>
+                    
+                    <div class="text-right">
+                        <p class="text-lg font-semibold text-gray-900 hover:scale-110 transition-transform duration-200">{{ produit.getProduit.prix / 100 }} €</p>
+                    </div>
+                </div>
+
+                <!-- Action visuelle uniquement -->
+                <a href="{{path('remove_product', {id: produit.getId})}}"  class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110" title="Supprimer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </a>
+            </div>
+        {% endfor %}
+
+        <!-- Total + Actions visuelles -->
+        <div class="mt-8 pt-6 border-t border-gray-100">
+            <div class="flex justify-between items-baseline text-xl mb-6">
+                <span class="text-gray-700 font-light tracking-tight">Total</span>
+                <span class="font-semibold text-gray-900 hover:scale-105 transition-transform duration-200">{{ total / 100 }} €</span>
+            </div>
+            
+            <div class="space-y-3">
+                <a href="{{ path('app_product')}}" class="w-full h-12 bg-gray-50 hover:bg-gray-100 text-gray-900 font-medium rounded-xl border transition-all duration-200 hover:scale-[1.02]  flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Continuer shopping
+                </a>
+                <a href="{{ path('app_checkout')}}" class="w-full h-12 bg-dark hover:bg-gray-100 text-white font-medium rounded-xl border transition-all duration-200 hover:scale-[1.02]  flex items-center justify-center gap-2">
+                    Passer commande →
+                </a>
+                
+            </div>
+        </div>
+
+    {% else %}
+        <div class="text-center py-16">
+            <div class="w-20 h-20 mx-auto mb-6 bg-gray-50 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                <svg class="w-10 h-10 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1 4c0 .4.3.8.8.8h9.6a.8.8 0 00.8-.8l-1-4"></path>
+                </svg>
+            </div>
+            <p class="text-lg font-medium text-gray-900 mb-2 hover:scale-105 transition-transform duration-200">Panier vide</p>
+            <p class="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200">Aucun produit ajouté</p>
+            <a href="{{path('app_product')}}" class="inline-flex items-center gap-2 text-gray-900 font-medium hover:text-gray-700 hover:scale-105 transition-all duration-200">
+                Découvrir les produits →
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+    <div class="cart-cta">
+        <div class="cta">
+            <p>Ready to check out?</p>    
+            <p>All transactions are secure.</p>
+            <button class="button-primary">Secure Checkout</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
